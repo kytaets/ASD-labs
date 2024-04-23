@@ -39,6 +39,7 @@ def createMatrix(n3, n4, N):
 
     return A
 
+
 # Changing dir to undirected matrix
 def toUndir(dir_matrix):
     n = len(dir_matrix)
@@ -138,8 +139,12 @@ def drawConnections(matrix, vert_coord, direction):
 
     def drawSelf():
 
-        turtle.setheading(135)
+        turtle.up()
+        turtle.goto(end)
+        turtle.setheading(90)
         turtle.forward(radius)
+        turtle.setheading(360)
+        turtle.down()
 
         turtle.color("green")
         turtle.circle(20)
@@ -174,7 +179,6 @@ def draw(matrix, N, direction=True):
     turtle.speed(0)
     vert_coord = drawVertexes(N)
     drawConnections(matrix, vert_coord, direction)
-    print(vert_coord)
 
 
 def main():
@@ -192,7 +196,7 @@ def main():
     turtle.clear()
 
     undir_matrix = toUndir(matrix)  # creating undirected matrix
-    print("Undirected Matrix:")
+    print("\nUndirected Matrix:")
     for i in range(N):
         print(undir_matrix[i])
     draw(undir_matrix, N, False)
