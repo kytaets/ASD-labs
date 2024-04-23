@@ -45,7 +45,7 @@ def createMatrix(n3, n4, N):
         return result
 
     T = randMatrix(N)  # creating matrix
-    k = 1.0 - n3 * 0.01 - n4 * 0.005 - 0.15
+    k = 1.0 - n3 * 0.01 - n4 * 0.005 - 0.05
     A = multiplyMatrix(T, k)  # converting matrix into graph
 
     return A
@@ -390,11 +390,11 @@ def drawGraph(matrix, vertexes, direction=True):
 
 
 # The main draw function
-def draw(A, N, vertexes, direction=True):
+def draw(matrix, N, vertexes, direction=True):
     turtle.speed(0)
     turtle.color("black")
     drawCircles(N)
-    drawGraph(A, vertexes, direction)
+    drawGraph(matrix, vertexes, direction)
 
 
 def drawSimpleCircle(element):
@@ -405,26 +405,25 @@ def drawSimpleCircle(element):
     turtle.circle(25)
 
 
-
 def main():
     n3 = 2
     n4 = 2
     N = 10 + n3  # N = 12
-    A = createMatrix(n3, n4, N)
+    matrix = createMatrix(n3, n4, N)
     vertexes = createPositions(N)
 
     print("Dir Matrix:")
     for i in range(N):
-        print(A[i])
+        print(matrix[i])
     print()
-    draw(A, N, vertexes)
+    draw(matrix, N, vertexes)
     keyboard.wait("r")
     turtle.clear()
 
-    A = createMatrix(n3, n4, N)
+    matrix = createMatrix(n3, n4, N)
     vertexes = createPositions(N)
 
-    draw(A, N, vertexes)
+    draw(matrix, N, vertexes)
 
     turtle.exitonclick()
 
