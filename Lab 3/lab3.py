@@ -1,8 +1,10 @@
 import turtle
 import random
 import math
+import time
 
 
+# Structure class of vertexes of graph
 class Vertex:
     def __init__(self, number, pos_x, pos_y, position, next_el, prev_el):
         self.number = number
@@ -11,31 +13,53 @@ class Vertex:
         self.position = position
         self.next_el = next_el
         self.prev_el = prev_el
+        self.connections = []
 
 
-# Creating a matrix with random float numbers
-def randMatrix(n):
-    random.seed(3222)
-    matrix = []
+# Creating matrix
+def createMatrix(n3, n4, N):
+    # Creating a matrix with random float numbers
+    def randMatrix(n):
+        random.seed(3222)
+        matrix = []
+        for i in range(n):
+            row = []
+            for j in range(n):
+                row.append(random.uniform(0, 2))
+            matrix.append(row)
+        return matrix
+
+    # Multiplying matrix by number
+    def multiplyMatrix(matrix, num):
+        result = []
+        for row in matrix:
+            updated = [round(element * num) for element in row]  # rounding element
+            result.append(updated)
+        return result
+
+    T = randMatrix(N)                           # creating matrix
+    k = 1.0 - n3 * 0.02 - n4 * 0.005 - 0.25     # creating multiplier
+    A = multiplyMatrix(T, k)                    # converting matrix into graph
+
+    return A
+
+# Changing dir to undirected matrix
+def toUndir(dir_matrix):
+    n = len(dir_matrix)
+
+    undirected_matrix = [[0 for _ in range(n)] for _ in range(n)]
+
     for i in range(n):
-        row = []
         for j in range(n):
-            row.append(random.uniform(0,2))
-        matrix.append(row)
-    return matrix
+            undirected_matrix[i][j] = dir_matrix[i][j] or dir_matrix[j][i]
+
+    return undirected_matrix
 
 
-# Multiplying matrix by number
-def multiplyMatrix(matrix, num):
-    result = []
-    for row in matrix:
-        updated = [round(element * num) for element in row]       # rounding element
-        result.append(updated)
-    return result
-
-
+# Creating list of vertexes
 def createPositions(N):
     vertexes = []
+    sides = int(N/4)
     x = -150
     y = 150
     position = "angle"
@@ -44,38 +68,38 @@ def createPositions(N):
         prev = i - 1
         next_el = i + 1
         if i == 0:
-            prev = 11
-        elif i == 11:
+            prev = N-1
+        elif i == N - 1:
             next_el = 0
 
-        if i % 3 == 0:
+        if i % sides == 0:
             position = "angle"
 
         vert = Vertex(i, x, y, position, next_el, prev)
         vertexes.append(vert)
 
-        if i <= 2:
+        if i < sides:
             x += 100
             position = "hor"
-        elif 2 < i <= 5:
+        elif sides <= i < sides*2:
             y -= 100
             position = "vert"
-        elif 5 < i <= 8:
+        elif sides*2 <= i < sides*3:
             x -= 100
             position = "hor"
-        elif i > 8:
+        elif i >= sides*3:
             y += 100
             position = "vert"
-
 
     return vertexes
 
 
 # Writing numbers in circles
-def writeNumbers():
+def writeNumbers(N):
+    sides = int(N/4)
     number = 1
     for i in range(4):
-        for j in range(3):
+        for j in range(sides):
             turtle.write(f"{number}", False, 'center', ('Arial', 25, 'normal'))
             turtle.up()
             turtle.forward(100)
@@ -86,14 +110,16 @@ def writeNumbers():
         turtle.right(90)
         turtle.down()
 
+
 # Drawing circles
-def drawCircles():
-    turtle.speed(0)
+def drawCircles(N):
+    sides = int(N/4)
     turtle.up()
     turtle.goto(-150, 125)
+    turtle.setheading(360)
     turtle.down()
     for i in range(4):
-        for j in range(3):
+        for j in range(sides):
             turtle.up()
             turtle.forward(100)
             turtle.down()
@@ -109,10 +135,10 @@ def drawCircles():
     turtle.goto(-150, 130)
     turtle.down()
 
-    turtle.speed(0)
-    writeNumbers()
+    writeNumbers(N)
 
 
+# Drawing arrow
 def drawArrow():
     position = turtle.position()
     turtle.left(135)
@@ -124,316 +150,288 @@ def drawArrow():
     turtle.forward(10)
 
 
-def drawLeft(row, el):
-    turtle.up()
-    turtle.goto(row.pos_x, row.pos_y)
-    turtle.setheading(180)
-    turtle.forward(25)
-    turtle.down()
-    turtle.goto(el.pos_x + 25, el.pos_y)
-    drawArrow()
-
-
-def drawRight(row, el):
-    turtle.up()
-    turtle.goto(row.pos_x, row.pos_y)
-    turtle.setheading(360)
-    turtle.forward(25)
-    turtle.down()
-    turtle.goto(el.pos_x - 25, el.pos_y)
-    drawArrow()
-
-
-def drawUp(row, el):
-    turtle.up()
-    turtle.goto(row.pos_x, row.pos_y)
-    turtle.setheading(90)
-    turtle.forward(25)
-    turtle.down()
-    turtle.goto(el.pos_x, el.pos_y - 25)
-    drawArrow()
-
-
-def drawDown(row, el):
-    turtle.up()
-    turtle.goto(row.pos_x, row.pos_y)
-    turtle.setheading(270)
-    turtle.forward(25)
-    turtle.down()
-    turtle.goto(el.pos_x, el.pos_y + 25)
-    drawArrow()
-
-
-def calculateHorizontalLine(row, el, degrees):
+# Calculating a part of broken line
+def calculateLine(distance, degrees):
     rad = math.radians(degrees)
-    a = abs(row.pos_x - el.pos_x)
-    b = a / 2 * math.cos(rad)
+    b = distance / 2 / math.cos(rad)
     return b
 
-def drawDistantRightUp(row, el):
-    degrees = 10
-    b = calculateHorizontalLine(row, el, degrees)
 
-    turtle.up()
-    turtle.goto(row.pos_x, row.pos_y + 25)
-    turtle.setheading(degrees)
-    turtle.down()
-    turtle.forward(b)
-    turtle.right(degrees*2)
-    turtle.forward(b)
-    drawArrow()
+# Calculating the point of the start/end
+def gotoPoint(position, x, y, diagonal=True):
+    k = 1
+    if not diagonal:
+        k = -1
+    if position == "hor":
+        is_negative = y / abs(y)
+        start = y - 25*k * is_negative
+        result = (x, start)
+    elif position == "vert":
+        is_negative = x / abs(x)
+        start = x - 25*k * is_negative
+        result = (start, y)
+    else:
+        is_negative_x = x / abs(x)
+        is_negative_y = y / abs(y)
+        start_x = x - 25*k * math.cos(0.785) * is_negative_x
+        start_y = y - 25*k * math.cos(0.785) * is_negative_y
+        result = (start_x, start_y)
 
-
-def drawDistantLeftUp(row, el):
-    degrees = 10
-    b = calculateHorizontalLine(row, el, degrees)
-
-    turtle.up()
-    turtle.goto(row.pos_x, row.pos_y + 25)
-    turtle.setheading(180 - degrees)
-    turtle.down()
-    turtle.forward(b)
-    turtle.left(degrees*2)
-    turtle.forward(b)
-    drawArrow()
+    return result
 
 
-def drawDistantRightDown(row, el):
-    degrees = 10
-    b = calculateHorizontalLine(row, el, degrees)
-
-    turtle.up()
-    turtle.goto(row.pos_x, row.pos_y - 25)
-    turtle.setheading(360-degrees)
-    turtle.down()
-    turtle.forward(b)
-    turtle.left(degrees*2)
-    turtle.forward(b)
-    drawArrow()
-
-
-def drawDistantLeftDown(row, el):
-    degrees = 10
-    b = calculateHorizontalLine(row, el, degrees)
-
-    turtle.up()
-    turtle.goto(row.pos_x, row.pos_y - 25)
-    turtle.setheading(180+degrees)
-    turtle.down()
-    turtle.forward(b)
-    turtle.right(degrees*2)
-    turtle.forward(b)
-    drawArrow()
-
-
-def calculateVerticalLine(row, el, degrees):
-    rad = math.radians(degrees)
-    a = abs(row.pos_y - el.pos_y)
-    b = a / 2 * math.cos(rad)
-    return b
-
-def drawDistantUpLeft(row, el):
-    degrees = 10
-    b = calculateVerticalLine(row, el, degrees)
-
-    turtle.up()
-    turtle.goto(row.pos_x - 25, row.pos_y)
-    turtle.setheading(90+degrees)
-    turtle.down()
-    turtle.forward(b)
-    turtle.right(degrees*2)
-    turtle.forward(b)
-    drawArrow()
-
-
-def drawDistantUpRight(row, el):
-    degrees = 10
-    b = calculateVerticalLine(row, el, degrees)
-
-    turtle.up()
-    turtle.goto(row.pos_x + 25, row.pos_y)
-    turtle.setheading(90-degrees)
-    turtle.down()
-    turtle.forward(b)
-    turtle.left(degrees*2)
-    turtle.forward(b)
-    drawArrow()
-
-
-def drawDistantDownLeft(row, el):
-    degrees = 10
-    b = calculateVerticalLine(row, el, degrees)
-
-    turtle.up()
-    turtle.goto(row.pos_x - 25, row.pos_y)
-    turtle.setheading(270-degrees)
-    turtle.down()
-    turtle.forward(b)
-    turtle.left(degrees*2)
-    turtle.forward(b)
-    drawArrow()
-
-
-def drawDistantDownRight(row, el, direction):
-    degrees = 10
-    b = calculateVerticalLine(row, el, degrees)
-
-    turtle.up()
-    turtle.goto(row.pos_x + 25, row.pos_y)
-    turtle.setheading(270+degrees)
-    turtle.down()
-    turtle.forward(b)
-    turtle.right(degrees*2)
-    turtle.forward(b)
-    drawArrow()
-
-
+# Drawing diagonal connections
 def drawDiagonal(row, el, direction):
-    def gotoPoint():
-        if position == "hor":
-            is_negative = y / abs(y)
-            print(is_negative)
-            start = y - 25 * is_negative
-            turtle.goto(x, start)
-        elif position == "vert":
-            is_negative = x / abs(x)
-            print(is_negative)
-            start = x - 25 * is_negative
-            turtle.goto(start, y)
-        else:
-            is_negative_x = x / abs(x)
-            is_negative_y = y / abs(y)
-            print(is_negative_x, is_negative_y)
-            start_x = x - 25 * math.cos(0.785) * is_negative_x
-            start_y = y - 25 * math.cos(0.785) * is_negative_y
-            turtle.goto(start_x, start_y)
-
     position = row.position
     x = row.pos_x
     y = row.pos_y
 
     turtle.up()
-    gotoPoint()
+    turtle.goto(gotoPoint(position, x, y))
     turtle.down()
 
     position = el.position
     x = el.pos_x
     y = el.pos_y
-    turtle.setheading(turtle.towards(x,y))
-    gotoPoint()
-    drawArrow()
+    turtle.setheading(turtle.towards(x, y))
+    goto_coord = gotoPoint(position, x, y)
+    # drawing simple line if there is no connection
+    if row.number not in el.connections:
+        turtle.goto(goto_coord)
+        if direction:
+            drawArrow()
+    # drawing broken line if there is a connection
+    elif row.number in el.connections and not direction:
+        return
+    else:
+        # calculating two parts of a line
+        distance = turtle.distance(goto_coord)
+        degrees = 10
+        rad = math.radians(degrees)
+        b = distance / 2 / math.cos(rad)
+
+        turtle.color("orange")
+        turtle.right(degrees)
+        turtle.forward(b)
+        turtle.setheading(turtle.towards(goto_coord))
+        turtle.goto(goto_coord)
+        drawArrow()
+        turtle.color("black")
+
+    row.connections.append(el.number)
 
 
+# Drawing neighbour connections
+def drawNeighbours(row, el, direction):
+    distance = 50
+
+    # Going to start point
+    turtle.up()
+    turtle.goto(row.pos_x, row.pos_y)
+    turtle.setheading(turtle.towards(el.pos_x, el.pos_y))
+    turtle.forward(25)
+    turtle.down()
+
+    # drawing simple line if there is no connection
+    if row.number not in el.connections:
+        turtle.forward(distance)
+        if direction:
+            drawArrow()
+    # drawing broken line if there is a connection
+    elif row.number in el.connections and direction:
+        # calculating two parts of a line
+        degrees = 30
+        b = calculateLine(distance, degrees)
+
+        turtle.color("blue")
+        turtle.right(degrees)
+        turtle.forward(b)
+        turtle.left(degrees * 2)
+        turtle.forward(b)
+        drawArrow()
+        turtle.color("black")
+
+    # adding this element to connections of row element
+    row.connections.append(el.number)
+
+
+# Drawing horizontal connections
+def drawHor(row, el, direction):
+    degrees = 10
+
+    turtle.up()
+    turtle.goto(row.pos_x, row.pos_y)
+    turtle.setheading(turtle.towards(el.pos_x, el.pos_y))
+
+    # drawing more curved line if there is a connection
+    if row.number in el.connections and direction:
+        degrees += 10
+        turtle.color("red")
+    # drawing nothing if there is a connection and no direction
+    elif row.number in el.connections and not direction:
+        return
+    # drawing next element
+    if row.number < el.number:
+        turtle.left(degrees)
+        if row.pos_x < el.pos_x:
+            turtle.goto(row.pos_x, row.pos_y + 25)
+        else:
+            turtle.goto(row.pos_x, row.pos_y - 25)
+
+    # drawing previous element
+    else:
+        turtle.right(degrees)
+        # checking order of elements (from left to right)
+        if row.pos_x < el.pos_x:
+            turtle.goto(row.pos_x, row.pos_y - 25)
+        # (from right to left)
+        else:
+            turtle.goto(row.pos_x, row.pos_y + 25)
+
+    distance = turtle.distance(el.pos_x, el.pos_y)
+    is_negative = el.pos_y / abs(el.pos_y)
+    goto_y = el.pos_y + 25 * is_negative
+    b = calculateLine(distance, degrees)
+
+    turtle.down()
+    turtle.forward(b)
+    turtle.setheading(turtle.towards(el.pos_x, goto_y))
+    turtle.goto(el.pos_x, goto_y)
+    if direction:
+        drawArrow()
+
+    row.connections.append(el.number)
+    turtle.color("black")
+
+
+# Drawing vertical connections
+def drawVert(row, el, direction):
+    degrees = 10
+
+    turtle.up()
+    turtle.goto(row.pos_x, row.pos_y)
+    turtle.setheading(turtle.towards(el.pos_x, el.pos_y))
+    # drawing more curved line if there is a connection
+    if row.number in el.connections and direction:
+        degrees += 10
+        turtle.color("red")
+    # drawing nothing if there is a connection and no direction
+    elif row.number in el.connections and not direction:
+        return
+
+    # drawing next element
+    if row.number < el.number:
+        turtle.left(degrees)
+        # checking order of elements (from left to right)
+        if row.pos_y > el.pos_y:
+            turtle.goto(row.pos_x + 25, row.pos_y)
+        # (from right to left)
+        else:
+            turtle.goto(row.pos_x - 25, row.pos_y)
+
+    # drawing previous element
+    else:
+        turtle.right(degrees)
+        if row.pos_y > el.pos_y:
+            turtle.goto(row.pos_x - 25, row.pos_y)
+        else:
+            turtle.goto(row.pos_x + 25, row.pos_y)
+
+    distance = turtle.distance(el.pos_x, el.pos_y)
+    is_negative = el.pos_x / abs(el.pos_x)
+    goto_x = el.pos_x + 25 * is_negative
+    b = calculateLine(distance, degrees)
+
+    turtle.down()
+    turtle.forward(b)
+    turtle.setheading(turtle.towards(goto_x, el.pos_y))
+    turtle.goto(goto_x, el.pos_y)
+    if direction:
+        drawArrow()
+
+    row.connections.append(el.number)
+    turtle.color("black")
+
+
+# Drawing connection with itself
+def drawSelf(row, direction):
+    position = row.position
+    x = row.pos_x
+    y = row.pos_y
+
+    turtle.up()
+    turtle.goto(gotoPoint(position, x, y, False))
+    turtle.down()
+    turtle.setheading(turtle.towards(x, y) + 90)
+
+    turtle.color("green")
+    turtle.circle(20)
+    if direction:
+        drawArrow()
+    turtle.color("black")
+
+
+# Drawing vertexes connections
 def drawConnections(matrix, vertexes, direction=True):
-    # i=3
-
     for i in range(len(matrix)):
-        vert1 = vertexes[i]
+        row = vertexes[i]
         for j in range(len(matrix[i])):
-            turtle.speed(0)
+            element = vertexes[j]
+            # checking if vertexes have connection
             if matrix[i][j]:
-                if vert1 != vertexes[j]:
-                    if vertexes[j].pos_y == vert1.pos_y:
-                        # Connecting neighbours
-                        if vert1.next_el == vertexes[j].number:      # horizontal next
-                            print("horiz next")
-                            print(vertexes[j].number, vertexes[j].pos_x, vertexes[j].pos_y, vertexes[j].next_el,
-                                  vertexes[j].prev_el)
-                            if i <= 3:
-                                drawRight(vert1, vertexes[j])
-                            else:
-                                drawLeft(vert1, vertexes[j])
+                # checking if vertex is not the element itself
+                if row != element:
+                    # moving through neighbours
+                    diff = len(vertexes) / 4 - abs(row.number - element.number)
+                    if row.next_el == element.number or row.prev_el == element.number:
+                        drawNeighbours(row, element, direction)
 
-                        elif vert1.prev_el == vertexes[j].number:    # horizontal previous
-                            print("horiz prev")
-                            print(vertexes[j].number, vertexes[j].pos_x, vertexes[j].pos_y, vertexes[j].next_el,
-                                  vertexes[j].prev_el)
-                            if i <= 3:
-                                drawLeft(vert1, vertexes[j])
-                            else:
-                                drawRight(vert1, vertexes[j])
+                    # moving through the same y-es
+                    elif row.pos_y == element.pos_y and diff >= 0:
+                        drawHor(row, element, direction)
 
-                        # Connecting other
-                        elif vert1.number < vertexes[j].number:     # horizontal next
-                            turtle.speed(0)
-                            print(vertexes[j].number, vertexes[j].pos_x, vertexes[j].pos_y, vertexes[j].next_el,
-                                  vertexes[j].prev_el)
-                            if i <= 3:
-                                drawDistantRightUp(vert1, vertexes[j])
-                            elif 6 <= i <= 9:
-                                drawDistantLeftDown(vert1, vertexes[j])
-                        elif vert1.number > vertexes[j].number:     # horizontal previous
-                            turtle.speed(0)
-                            print(vertexes[j].number, vertexes[j].pos_x, vertexes[j].pos_y, vertexes[j].next_el,
-                                  vertexes[j].prev_el)
-                            if i <= 3:
-                                drawDistantLeftUp(vert1, vertexes[j])
-                            elif 6 <= i <= 9:
-                                drawDistantRightDown(vert1, vertexes[j])
+                    # moving through the same x-es
+                    elif row.pos_x == element.pos_x and diff >= 0:
+                        drawVert(row, element, direction)
 
-                    elif vertexes[j].pos_x == vert1.pos_x:
-                        # Connecting neighbours
-                        if vert1.next_el == vertexes[j].number:    # vertical next
-                            print("vert next")
-                            print(vertexes[j].number, vertexes[j].pos_x, vertexes[j].pos_y, vertexes[j].next_el,
-                                  vertexes[j].prev_el)
-                            if 0 < i <= 6:
-                                drawDown(vert1, vertexes[j])
-                            else:
-                                drawUp(vert1, vertexes[j])
-                        elif vert1.prev_el == vertexes[j].number:    # vertical previous
-                            print("vert prev")
-                            print(vertexes[j].number, vertexes[j].pos_x, vertexes[j].pos_y, vertexes[j].next_el,
-                                  vertexes[j].prev_el)
-                            if j <= 6:
-                                drawUp(vert1, vertexes[j])
-                            else:
-                                drawDown(vert1, vertexes[j])
+                    # moving through diagonal elements
+                    elif row.pos_y != element.pos_y and row.pos_x != element.pos_x:
+                        drawDiagonal(row, element, direction)
 
-                        # Connecting other
-                        elif vert1.number < vertexes[j].number:     # vertical next
-                            print(vertexes[j].number, vertexes[j].pos_x, vertexes[j].pos_y, vertexes[j].next_el,
-                                  vertexes[j].prev_el)
-                            if 3 <= i < 6:
-                                drawDistantDownRight(vert1, vertexes[j])
-                            elif i == 0:
-                                drawDistantDownLeft(vert1, vertexes[j])
-                            elif i >= 9:
-                                drawDistantUpLeft(vert1, vertexes[j])
-
-                        elif vert1.number > vertexes[j].number:     # vertical previous
-                            print(vertexes[j].number, vertexes[j].pos_x, vertexes[j].pos_y, vertexes[j].next_el,
-                                  vertexes[j].prev_el)
-                            if 5 <= i < 6:
-                                drawDistantUpRight(vert1, vertexes[j])
-                            elif i > 10:
-                                drawDistantDownLeft(vert1, vertexes[j])
-
-                    else:
-                        drawDiagonal(vert1, vertexes[j])
+                # drawing connection with element itself
+                else:
+                    drawSelf(row, direction)
 
 
-n3 = 2
-n4 = 2
-N = 10 + n3     # N = 12
-
-T = randMatrix(N)                       # creating matrix
-k = 1.0 - n3*0.02 - n4*0.005 - 0.25     # creating multiplier
-A = multiplyMatrix(T, k)                # converting matrix into graph
-for i in range(N):
-    print(A[i])
+# The main draw function
+def draw(A, N, direction=True):
+    turtle.speed(0)
+    drawCircles(N)
+    vertexes = createPositions(N)
+    drawConnections(A, vertexes, direction)
 
 
-drawCircles()
-createPositions(N)
-vertMatrix = createPositions(N)
-drawConnections(A, vertMatrix)
+def main():
+    n3 = 2
+    n4 = 2
+    N = 10 + n3  # N = 12
+
+    A = createMatrix(n3, n4, N)             # creating dir matrix
+    print("Dir Matrix:")
+    for i in range(N):
+        print(A[i])
+
+    draw(A, N)
+    time.sleep(5)
+    turtle.clear()
+
+    undirA = toUndir(A)                    # creating undirected matrix
+    print("Undirected Matrix:")
+    for i in range(N):
+        print(undirA[i])
+
+    draw(undirA, N, False)
+    turtle.exitonclick()
 
 
-
-
-
-
-
-turtle.exitonclick()
-
+main()
