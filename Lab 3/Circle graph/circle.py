@@ -2,6 +2,8 @@ import turtle
 import random
 import math
 import time
+import keyboard
+
 
 # Creating matrix
 def createMatrix(n3, n4, N):
@@ -104,7 +106,7 @@ def drawConnections(matrix, vert_coord):
         turtle.left(90)
         turtle.forward(10)
 
-    def drawLine():
+    def gotoStart():
         turtle.up()
         turtle.goto(start)
         angle = turtle.towards(end)
@@ -112,12 +114,30 @@ def drawConnections(matrix, vert_coord):
         turtle.forward(radius)
         turtle.down()
 
+    def drawLine():
+        gotoStart()
         turtle.forward(turtle.distance(end) - radius)
         drawArrow()
 
-    turtle.speed(3)
+    def drawCurvedLine():
+        gotoStart()
+        degrees = 10
+        distance = turtle.distance(end) - 25
+        rad = math.radians(degrees)
+        b = distance / 2 / math.cos(rad)
+
+        turtle.color("blue")
+        turtle.right(degrees)
+        turtle.forward(b)
+        turtle.setheading(turtle.towards(end))
+        turtle.forward(b)
+        drawArrow()
+        turtle.color("black")
+
+    turtle.speed(0)
     n = len(matrix)
     radius = 25
+    connections = []
 
     for i in range(n):
         start = vert_coord[i]
@@ -127,8 +147,12 @@ def drawConnections(matrix, vert_coord):
             if matrix[i][j]:
                 # checking if vertex is not the element itself
                 if start != end:
-                    drawLine()
-
+                    # checking if there is already a connection between vertexes
+                    if (end, start) not in connections:
+                        drawLine()
+                        connections.append((start, end))
+                    else:
+                        drawCurvedLine()
 
 
 def draw(matrix, N, direction=True):
@@ -137,26 +161,27 @@ def draw(matrix, N, direction=True):
     drawConnections(matrix, vert_coord)
     print(vert_coord)
 
+
 def main():
     n3 = 2
     n4 = 2
     N = 10 + n3  # N = 12
 
-    A = createMatrix(n3, n4, N)  # creating dir matrix
+    matrix = createMatrix(n3, n4, N)  # creating dir matrix
     print("Dir Matrix:")
     for i in range(N):
-        print(A[i])
+        print(matrix[i])
 
-    draw(A, N)
-    # time.sleep(5)
-    # turtle.clear()
-    #
-    # undirA = toUndir(A)  # creating undirected matrix
-    # print("Undirected Matrix:")
-    # for i in range(N):
-    #     print(undirA[i])
-    #
-    # draw(undirA, N, False)
+    draw(matrix, N)
+    keyboard.wait("Space")
+    turtle.clear()
+
+    undirMatrix = toUndir(matrix)  # creating undirected matrix
+    print("Undirected Matrix:")
+    for i in range(N):
+        print(undirMatrix[i])
+
+    draw(undirMatrix, N, False)
     turtle.exitonclick()
 
 main()
