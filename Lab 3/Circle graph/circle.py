@@ -72,6 +72,7 @@ def drawVertexes(N):
 
     turtle.up()
     turtle.goto(75, 250)
+    turtle.setheading(360)
 
     for i in range(N - 1):
         heading = turtle.heading()
@@ -94,7 +95,7 @@ def drawVertexes(N):
 
 
 # Drawing connections between vertexes
-def drawConnections(matrix, vert_coord):
+def drawConnections(matrix, vert_coord, direction):
 
     def drawArrow():
         position = turtle.position()
@@ -117,7 +118,8 @@ def drawConnections(matrix, vert_coord):
     def drawLine():
         gotoStart()
         turtle.forward(turtle.distance(end) - radius)
-        drawArrow()
+        if direction:
+            drawArrow()
 
     def drawCurvedLine():
         gotoStart()
@@ -132,6 +134,17 @@ def drawConnections(matrix, vert_coord):
         turtle.setheading(turtle.towards(end))
         turtle.forward(b)
         drawArrow()
+        turtle.color("black")
+
+    def drawSelf():
+
+        turtle.setheading(135)
+        turtle.forward(radius)
+
+        turtle.color("green")
+        turtle.circle(20)
+        if direction:
+            drawArrow()
         turtle.color("black")
 
     turtle.speed(0)
@@ -151,14 +164,16 @@ def drawConnections(matrix, vert_coord):
                     if (end, start) not in connections:
                         drawLine()
                         connections.append((start, end))
-                    else:
+                    elif direction:
                         drawCurvedLine()
+                else:
+                    drawSelf()
 
 
 def draw(matrix, N, direction=True):
     turtle.speed(0)
     vert_coord = drawVertexes(N)
-    drawConnections(matrix, vert_coord)
+    drawConnections(matrix, vert_coord, direction)
     print(vert_coord)
 
 
@@ -171,17 +186,18 @@ def main():
     print("Dir Matrix:")
     for i in range(N):
         print(matrix[i])
-
     draw(matrix, N)
+
     keyboard.wait("Space")
     turtle.clear()
 
-    undirMatrix = toUndir(matrix)  # creating undirected matrix
+    undir_matrix = toUndir(matrix)  # creating undirected matrix
     print("Undirected Matrix:")
     for i in range(N):
-        print(undirMatrix[i])
+        print(undir_matrix[i])
+    draw(undir_matrix, N, False)
 
-    draw(undirMatrix, N, False)
     turtle.exitonclick()
+
 
 main()
