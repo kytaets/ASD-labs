@@ -400,7 +400,7 @@ def draw(matrix, N, vertexes, direction=True):
     drawGraph(matrix, vertexes, direction)
 
 
-def createMatrixW(matrixA, n3, n4, N):
+def createMatrixW(matrixA, N):
     def elementProduct(matrix1, matrix2, k=1):
         result = []
         for i in range(len(matrix1)):
@@ -428,12 +428,25 @@ def createMatrixW(matrixA, n3, n4, N):
         matrix = [[0] * n for _ in range(n)]
 
         for i in range(n):
-            for j in range(i, n):
+            for j in range(i+1, n):
                 matrix[i][j] = 1
 
         return matrix
 
-    def createMatrixW(matrixD, matrixH, matrixTr, matrixC):
+    def creareD(matrix):
+        result = []
+        for row in matrix:
+            updated_row = []
+            for element in row:
+                if element > 0:
+                    updated = 1
+                else:
+                    updated = 0
+                updated_row.append(updated)
+            result.append(updated_row)
+        return result
+
+    def createW():
         result = []
         for i in range(len(matrixD)):
             row = []
@@ -441,34 +454,43 @@ def createMatrixW(matrixA, n3, n4, N):
                 row.append((matrixD[i][j] + matrixH[i][j] * matrixTr[i][j]) * matrixC[i][j])
             result.append(row)
 
+        for i in range(N):
+            for j in range(N):
+                result[i][j] = result[j][i]
+
         return result
 
     matrixB = randMatrix(N)
-    # print("B matrix:")
-    # for i in range(N):
-    #     print(matrixB[i])
-    # print()
+    print("B matrix:")
+    for i in range(N):
+        print(matrixB[i])
+    print()
 
     matrixC = elementProduct(matrixA, matrixB, 100)
-    # print("C matrix:")
-    # for i in range(N):
-    #     print(matrixC[i])
-    # print()
+    print("C matrix:")
+    for i in range(N):
+        print(matrixC[i])
+    print()
 
-    matrixD = multiplyMatrix(matrixC)
-    # print("D matrix:")
-    # for i in range(N):
-    #     print(matrixD[i])
-    # print()
+    matrixD = creareD(matrixC)
+    print("D matrix:")
+    for i in range(N):
+        print(matrixD[i])
+    print()
 
     matrixH = symmetricMatrix(matrixD)
-    # print("H matrix:")
-    # for i in range(N):
-    #     print(matrixH[i])
-    # print()
+    print("H matrix:")
+    for i in range(N):
+        print(matrixH[i])
+    print()
 
     matrixTr = triangularMatrix(N)
-    matrixW = createMatrixW(matrixD, matrixH, matrixTr, matrixC)
+    print("Tr matrix:")
+    for i in range(N):
+        print(matrixTr[i])
+    print()
+
+    matrixW = createW()
     print("W matrix:")
     for i in range(N):
         print(matrixW[i])
@@ -486,7 +508,7 @@ def main():
         print(matrixA[i])
     print()
     draw(matrixA, N, vertexes)
-    createMatrixW(matrixA, n3, n4, N)
+    createMatrixW(matrixA, N)
 
 
     # keyboard.wait("r")
