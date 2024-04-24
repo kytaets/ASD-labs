@@ -16,33 +16,36 @@ class Vertex:
         self.connections = []
 
 
+# Creating a matrix with random float numbers
+def randMatrix(n):
+    random.seed(3222)
+    matrix = []
+    for i in range(n):
+        row = []
+        for j in range(n):
+            row.append(random.uniform(0, 2))
+        matrix.append(row)
+    return matrix
+
+
+# Multiplying matrix by number
+def multiplyMatrix(matrix, num=1):
+    result = []
+    for row in matrix:
+        updated_row = []
+        for element in row:
+            element *= num
+            if element >= 1.4:
+                updated = 1
+            else:
+                updated = 0
+            updated_row.append(updated)
+        result.append(updated_row)
+    return result
+
+
 # Creating matrix
 def createMatrix(n3, n4, N):
-    # Creating a matrix with random float numbers
-    def randMatrix(n):
-        random.seed(3222)
-        matrix = []
-        for i in range(n):
-            row = []
-            for j in range(n):
-                row.append(random.uniform(0, 2))
-            matrix.append(row)
-        return matrix
-
-    # Multiplying matrix by number
-    def multiplyMatrix(matrix, num):
-        result = []
-        for row in matrix:
-            updated_row = []
-            for element in row:
-                element *= num
-                if element >= 1.4:
-                    updated = 1
-                else:
-                    updated = 0
-                updated_row.append(updated)
-            result.append(updated_row)
-        return result
 
     T = randMatrix(N)  # creating matrix
     k = 1.0 - n3 * 0.01 - n4 * 0.005 - 0.05
@@ -397,33 +400,102 @@ def draw(matrix, N, vertexes, direction=True):
     drawGraph(matrix, vertexes, direction)
 
 
-def drawSimpleCircle(element):
-    turtle.up()
-    turtle.goto(element.pos_x, element.pos_y - 25)
-    turtle.setheading(360)
-    turtle.down()
-    turtle.circle(25)
+def createMatrixW(matrixA, n3, n4, N):
+    def elementProduct(matrix1, matrix2, k=1):
+        result = []
+        for i in range(len(matrix1)):
+            row = []
+            for j in range(len(matrix1[0])):
+                row.append(matrix1[i][j] * matrix2[i][j] * k)
+            result.append(row)
 
+        return result
+
+    def symmetricMatrix(matrix):
+        result = []
+        for i in range(len(matrix)):
+            row = []
+            for j in range(len(matrix[0])):
+                if matrix[i][j] != matrix[j][i]:
+                    row.append(1)
+                else:
+                    row.append(0)
+            result.append(row)
+
+        return result
+
+    def triangularMatrix(n):
+        matrix = [[0] * n for _ in range(n)]
+
+        for i in range(n):
+            for j in range(i, n):
+                matrix[i][j] = 1
+
+        return matrix
+
+    def createMatrixW(matrixD, matrixH, matrixTr, matrixC):
+        result = []
+        for i in range(len(matrixD)):
+            row = []
+            for j in range(len(matrixD[0])):
+                row.append((matrixD[i][j] + matrixH[i][j] * matrixTr[i][j]) * matrixC[i][j])
+            result.append(row)
+
+        return result
+
+    matrixB = randMatrix(N)
+    # print("B matrix:")
+    # for i in range(N):
+    #     print(matrixB[i])
+    # print()
+
+    matrixC = elementProduct(matrixA, matrixB, 100)
+    # print("C matrix:")
+    # for i in range(N):
+    #     print(matrixC[i])
+    # print()
+
+    matrixD = multiplyMatrix(matrixC)
+    # print("D matrix:")
+    # for i in range(N):
+    #     print(matrixD[i])
+    # print()
+
+    matrixH = symmetricMatrix(matrixD)
+    # print("H matrix:")
+    # for i in range(N):
+    #     print(matrixH[i])
+    # print()
+
+    matrixTr = triangularMatrix(N)
+    matrixW = createMatrixW(matrixD, matrixH, matrixTr, matrixC)
+    print("W matrix:")
+    for i in range(N):
+        print(matrixW[i])
+    print()
 
 def main():
     n3 = 2
     n4 = 2
-    N = 10 + n3  # N = 12
-    matrix = createMatrix(n3, n4, N)
+    N = 10 + n3                             # N = 12
+    matrixA = createMatrix(n3, n4, N)
     vertexes = createPositions(N)
 
     print("Dir Matrix:")
     for i in range(N):
-        print(matrix[i])
+        print(matrixA[i])
     print()
-    draw(matrix, N, vertexes)
-    keyboard.wait("r")
-    turtle.clear()
+    draw(matrixA, N, vertexes)
+    createMatrixW(matrixA, n3, n4, N)
 
-    matrix = createMatrix(n3, n4, N)
-    vertexes = createPositions(N)
 
-    draw(matrix, N, vertexes)
+    # keyboard.wait("r")
+    # turtle.clear()
+    #
+    # matrix = createMatrix(n3, n4, N)
+    # vertexes = createPositions(N)
+    #
+    # draw(matrix, N, vertexes)
 
     turtle.exitonclick()
 
