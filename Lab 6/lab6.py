@@ -35,7 +35,7 @@ def multiplyMatrix(matrix, num=1):
         updated_row = []
         for element in row:
             element *= num
-            if element >= 1.4:
+            if element >= 1.5:
                 updated = 1
             else:
                 updated = 0
@@ -43,6 +43,17 @@ def multiplyMatrix(matrix, num=1):
         result.append(updated_row)
     return result
 
+# Changing dir to undirected matrix
+def toUndir(dir_matrix):
+    n = len(dir_matrix)
+
+    undirected_matrix = [[0 for _ in range(n)] for _ in range(n)]
+
+    for i in range(n):
+        for j in range(n):
+            undirected_matrix[i][j] = dir_matrix[i][j] or dir_matrix[j][i]
+
+    return undirected_matrix
 
 # Creating matrix
 def createMatrix(n3, n4, N):
@@ -406,7 +417,7 @@ def createMatrixW(matrixA, N):
         for i in range(len(matrix1)):
             row = []
             for j in range(len(matrix1[0])):
-                row.append(matrix1[i][j] * matrix2[i][j] * k)
+                row.append(round(matrix1[i][j] * matrix2[i][j] * k))
             result.append(row)
 
         return result
@@ -461,34 +472,10 @@ def createMatrixW(matrixA, N):
         return result
 
     matrixB = randMatrix(N)
-    print("B matrix:")
-    for i in range(N):
-        print(matrixB[i])
-    print()
-
     matrixC = elementProduct(matrixA, matrixB, 100)
-    print("C matrix:")
-    for i in range(N):
-        print(matrixC[i])
-    print()
-
     matrixD = creareD(matrixC)
-    print("D matrix:")
-    for i in range(N):
-        print(matrixD[i])
-    print()
-
     matrixH = symmetricMatrix(matrixD)
-    print("H matrix:")
-    for i in range(N):
-        print(matrixH[i])
-    print()
-
     matrixTr = triangularMatrix(N)
-    print("Tr matrix:")
-    for i in range(N):
-        print(matrixTr[i])
-    print()
 
     matrixW = createW()
     print("W matrix:")
@@ -496,28 +483,41 @@ def createMatrixW(matrixA, N):
         print(matrixW[i])
     print()
 
+    vertexes_weight = []
+    sorted_vertexes = []
+    for i in range(N):
+        for j in range(N):
+            el = matrixW[i][j]
+            if el > 0 and el not in vertexes_weight:
+                vertexes_weight.append(matrixW[i][j])
+
+    vertexes_weight.sort()
+    print(vertexes_weight)
+
+    for k in vertexes_weight:
+        for i in range(N):
+            for j in range(N):
+                el = matrixW[i][j]
+                if el == k and (j, i) not in sorted_vertexes:
+                    sorted_vertexes.append((i, j))
+
+    print(sorted_vertexes)
+
+
 def main():
     n3 = 2
     n4 = 2
     N = 10 + n3                             # N = 12
     matrixA = createMatrix(n3, n4, N)
+    undirA = toUndir(matrixA)
     vertexes = createPositions(N)
 
-    print("Dir Matrix:")
+    print("Undirected Matrix:")
     for i in range(N):
-        print(matrixA[i])
+        print(undirA[i])
     print()
-    draw(matrixA, N, vertexes)
-    createMatrixW(matrixA, N)
-
-
-    # keyboard.wait("r")
-    # turtle.clear()
-    #
-    # matrix = createMatrix(n3, n4, N)
-    # vertexes = createPositions(N)
-    #
-    # draw(matrix, N, vertexes)
+    draw(undirA, N, vertexes, False)
+    createMatrixW(undirA, N)
 
     turtle.exitonclick()
 
