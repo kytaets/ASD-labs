@@ -671,7 +671,7 @@ def main():
 
         if not change:
             print("Building undirected graph...")
-            time.sleep(900)
+            time.sleep(5)
             turtle.clear()
 
             undirA = toUndir(A)                    # creating undirected matrix
