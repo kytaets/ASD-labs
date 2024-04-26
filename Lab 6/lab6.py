@@ -411,6 +411,7 @@ def draw(matrix, N, vertexes, direction=True):
     drawGraph(matrix, vertexes, direction)
 
 
+# Creating weighted matrix
 def createMatrixW(matrixA, N):
     def elementProduct(matrix1, matrix2, k=1):
         result = []
