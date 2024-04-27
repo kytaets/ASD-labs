@@ -358,7 +358,7 @@ def drawConnections(row, element, vertexes, direction=True):
         turtle.down()
         turtle.setheading(turtle.towards(x, y) + 90)
 
-        turtle.color("red")
+        turtle.color("green")
         turtle.circle(20)
         if direction:
             drawArrow()
@@ -411,8 +411,16 @@ def draw(matrix, N, vertexes, direction=True):
     drawGraph(matrix, vertexes, direction)
 
 
+def drawSimpleCircle(element):
+    turtle.up()
+    turtle.goto(element.pos_x, element.pos_y - 25)
+    turtle.setheading(360)
+    turtle.down()
+    turtle.circle(25)
+
+
 # Creating weighted matrix
-def createMatrixW(matrixA, N):
+def createMatrixW(matrixA, vertexes):
     def elementProduct(matrix1, matrix2, k=1):
         result = []
         for i in range(len(matrix1)):
@@ -472,6 +480,7 @@ def createMatrixW(matrixA, N):
 
         return result
 
+    N = len(matrixA)
     matrixB = randMatrix(N)
     matrixC = elementProduct(matrixA, matrixB, 100)
     matrixD = creareD(matrixC)
@@ -506,13 +515,28 @@ def createMatrixW(matrixA, N):
     print(mst_vertexes)
     print(sorted_edges)
 
+    turtle.color("red")
+    turtle.pensize(3)
+    turtle.speed(3)
+
     while sorted_edges and len(mst_vertexes) != len(matrixA):
-        keyboard.wait("Space")
+        draw = False
         for vert in sorted_edges[0]:
             if sorted_edges[0][0] == sorted_edges[0][1]:
-                pass
-            elif vert not in mst_vertexes:
+                continue
+            if vert not in mst_vertexes:
                 mst_vertexes.append(vert)
+                draw = True
+            else:
+                continue
+
+        if draw:
+            keyboard.wait("Space")
+            row = vertexes[sorted_edges[0][0]]
+            element = vertexes[sorted_edges[0][1]]
+            drawSimpleCircle(row)
+            drawConnections(row, element, vertexes, False)
+            drawSimpleCircle(element)
 
         sorted_edges.pop(0)
         print(mst_vertexes)
@@ -531,7 +555,7 @@ def main():
         print(undirA[i])
     print()
     draw(undirA, N, vertexes, False)
-    createMatrixW(undirA, N)
+    createMatrixW(undirA, vertexes)
 
     turtle.exitonclick()
 
