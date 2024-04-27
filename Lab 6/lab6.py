@@ -485,7 +485,8 @@ def createMatrixW(matrixA, N):
     print()
 
     vertexes_weight = []
-    sorted_vertexes = []
+    sorted_edges = []
+    mst_vertexes = []
     for i in range(N):
         for j in range(N):
             el = matrixW[i][j]
@@ -499,11 +500,23 @@ def createMatrixW(matrixA, N):
         for i in range(N):
             for j in range(N):
                 el = matrixW[i][j]
-                if el == k and (j, i) not in sorted_vertexes:
-                    sorted_vertexes.append((i, j))
+                if el == k and (j, i) not in sorted_edges:
+                    sorted_edges.append((i, j))
 
-    print(sorted_vertexes)
+    print(mst_vertexes)
+    print(sorted_edges)
 
+    while sorted_edges and len(mst_vertexes) != len(matrixA):
+        keyboard.wait("Space")
+        for vert in sorted_edges[0]:
+            if sorted_edges[0][0] == sorted_edges[0][1]:
+                pass
+            elif vert not in mst_vertexes:
+                mst_vertexes.append(vert)
+
+        sorted_edges.pop(0)
+        print(mst_vertexes)
+        print(sorted_edges)
 
 def main():
     n3 = 2
