@@ -1,3 +1,4 @@
+import time
 import turtle
 import random
 import math
@@ -496,33 +497,38 @@ def createMatrixW(matrixA, vertexes):
     vertexes_weight = []
     sorted_edges = []
     mst_groups = [[]]
+
     for i in range(N):
         for j in range(N):
             el = matrixW[i][j]
             if el > 0 and el not in vertexes_weight:
                 vertexes_weight.append(matrixW[i][j])
 
+    time.sleep(1)
     vertexes_weight.sort()
-    print(vertexes_weight)
+    print("Weights of graph:", vertexes_weight)
 
     for k in vertexes_weight:
         for i in range(N):
             for j in range(N):
                 el = matrixW[i][j]
-                if el == k and (j, i) not in sorted_edges:
-                    sorted_edges.append((i, j))
+                if el == k and [(j, i), k] not in sorted_edges:
+                    sorted_edges.append([(i, j), k])
 
-    print(mst_groups)
-    # print(sorted_edges)
+    # print(mst_groups)
+    time.sleep(1)
+    print("Sorted edges by their weight:")
+    time.sleep(1)
+    for i in range(len(sorted_edges)):
+        print(sorted_edges[i])
 
     turtle.color("red")
     turtle.pensize(3)
     turtle.speed(3)
 
-
     while sorted_edges and len(mst_groups[0]) < len(matrixA):
-        frm = sorted_edges[0][0]
-        to = sorted_edges[0][1]
+        frm = sorted_edges[0][0][0]
+        to = sorted_edges[0][0][1]
         draw = False
 
         if not mst_groups[0]:
@@ -548,21 +554,17 @@ def createMatrixW(matrixA, vertexes):
                     shared_groups.append(i)
                     new_group = False
                     draw = True
-                    print("Added frm: ", frm)
                 elif to not in group:
                     shared_groups.append(i)
                     mst_groups[i].append(to)
                     new_group = False
                     draw = True
-                    print("Added to: ", to)
 
             if new_group:
                 mst_groups.append([frm, to])
-                print(("Added new group: ", [frm, to]))
                 draw = True
 
-            print("MST list: ", mst_groups)
-            print("Shared groups: ", shared_groups)
+            # print("MST list: ", mst_groups)
 
             if len(shared_groups) == 2:
                 added_group = mst_groups[shared_groups[1]]
@@ -571,22 +573,22 @@ def createMatrixW(matrixA, vertexes):
                     vert = added_group[i]
                     if vert not in main_group:
                         main_group.append(vert)
-                    print(mst_groups)
 
                 mst_groups.pop(shared_groups[1])
-                print("After: ", mst_groups)
 
         if draw:
             keyboard.wait("Space")
+            print("Edge:", (frm, to), "Weight:", sorted_edges[0][1])
             row = vertexes[frm]
             element = vertexes[to]
+
             drawSimpleCircle(row)
             drawConnections(row, element, vertexes, False)
             drawSimpleCircle(element)
 
         sorted_edges.pop(0)
 
-    print("End")
+    print("MST has built.")
 
 
 def main():
