@@ -497,6 +497,7 @@ def createMatrixW(matrixA, vertexes):
     vertexes_weight = []
     sorted_edges = []
     mst_groups = [[]]
+    weights_sum = 0
 
     for i in range(N):
         for j in range(N):
@@ -579,6 +580,7 @@ def createMatrixW(matrixA, vertexes):
         if draw:
             keyboard.wait("Space")
             print("Edge:", (frm, to), "Weight:", sorted_edges[0][1])
+            weights_sum += sorted_edges[0][1]
             row = vertexes[frm]
             element = vertexes[to]
 
@@ -589,6 +591,7 @@ def createMatrixW(matrixA, vertexes):
         sorted_edges.pop(0)
 
     print("MST has built.")
+    print("Edges' weight sum:", weights_sum)
 
 
 def main():
