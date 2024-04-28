@@ -530,12 +530,12 @@ def createMatrixW(matrixA, vertexes):
     while sorted_edges and len(mst_groups[0]) < len(matrixA):
         frm = sorted_edges[0][0][0]
         to = sorted_edges[0][0][1]
-        draw = False
+        draw = []
 
         if not mst_groups[0]:
             mst_groups[0].append(frm)
             mst_groups[0].append(to)
-            draw = True
+            draw = [frm, to]
 
         elif frm == to:
             pass
@@ -554,16 +554,16 @@ def createMatrixW(matrixA, vertexes):
                     mst_groups[i].append(frm)
                     shared_groups.append(i)
                     new_group = False
-                    draw = True
+                    draw.append(frm)
                 elif to not in group:
                     shared_groups.append(i)
                     mst_groups[i].append(to)
                     new_group = False
-                    draw = True
+                    draw.append(to)
 
             if new_group:
                 mst_groups.append([frm, to])
-                draw = True
+                draw = [frm, to]
 
             # print("MST list: ", mst_groups)
 
@@ -584,9 +584,10 @@ def createMatrixW(matrixA, vertexes):
             row = vertexes[frm]
             element = vertexes[to]
 
-            drawSimpleCircle(row)
+            for i in draw:
+                el = vertexes[i]
+                drawSimpleCircle(el)
             drawConnections(row, element, vertexes, False)
-            drawSimpleCircle(element)
 
         sorted_edges.pop(0)
 
