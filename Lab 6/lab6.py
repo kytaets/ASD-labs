@@ -448,6 +448,14 @@ def drawSimpleCircle(element):
     turtle.circle(25)
 
 
+# Class for weighted vertexes
+class WeightedVertex:
+    def __init__(self, vertexes, weight):
+        self.vertexes = vertexes
+        self.weight = weight
+        self.next = None
+
+
 # Creating weighted matrix
 def drawWeightedGraph(matrixA, vertexes):
     def elementProduct(matrix1, matrix2, k=1):
@@ -545,23 +553,27 @@ def drawWeightedGraph(matrixA, vertexes):
         for i in range(N):
             for j in range(N):
                 el = matrixW[i][j]
-                if el == k and [(j, i), k] not in sorted_edges:
-                    sorted_edges.append([(i, j), k])
+                if el == k and not any(obj.vertexes == (i, j) for obj in sorted_edges):
+                    obj = WeightedVertex((i, j), k)
+                    if sorted_edges:
+                        sorted_edges[len(sorted_edges) - 1].next = obj
+                    sorted_edges.append(obj)
 
     # print(mst_groups)
     time.sleep(1)
     print("Sorted edges by their weight:")
     time.sleep(1)
     for i in range(len(sorted_edges)):
-        print(sorted_edges[i])
+        obj = sorted_edges[i]
+        print(obj.vertexes, obj.weight)
 
     turtle.color("red")
     turtle.pensize(3)
     turtle.speed(3)
 
     while sorted_edges and len(mst_groups[0]) < len(matrixA):
-        frm = sorted_edges[0][0][0]
-        to = sorted_edges[0][0][1]
+        frm = sorted_edges[0].vertexes[0]
+        to = sorted_edges[0].vertexes[1]
         draw = []
 
         # Checking if there is already a group
@@ -613,15 +625,15 @@ def drawWeightedGraph(matrixA, vertexes):
 
         if draw:
             keyboard.wait("Space")
-            print("Edge:", (frm, to), "Weight:", sorted_edges[0][1])
-            weights_sum += sorted_edges[0][1]
+            print("Edge:", (frm, to), "Weight:", sorted_edges[0].weight)
+            weights_sum += sorted_edges[0].weight
             row = vertexes[frm]
             element = vertexes[to]
 
             for i in draw:
                 el = vertexes[i]
                 drawSimpleCircle(el)
-            drawConnections(row, element, vertexes, False, sorted_edges[0][1])
+            drawConnections(row, element, vertexes, False, sorted_edges[0].weight)
 
 
         sorted_edges.pop(0)
