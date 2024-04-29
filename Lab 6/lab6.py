@@ -44,6 +44,7 @@ def multiplyMatrix(matrix, num=1):
         result.append(updated_row)
     return result
 
+
 # Changing dir to undirected matrix
 def toUndir(dir_matrix):
     n = len(dir_matrix)
@@ -55,6 +56,7 @@ def toUndir(dir_matrix):
             undirected_matrix[i][j] = dir_matrix[i][j] or dir_matrix[j][i]
 
     return undirected_matrix
+
 
 # Creating matrix
 def createMatrix(n3, n4, N):
@@ -147,7 +149,7 @@ def drawCircles(N):
     writeNumbers(N)
 
 
-def drawConnections(row, element, vertexes, direction=True):
+def drawConnections(row, element, vertexes, direction=True, weight=0):
     # Drawing arrow
     def drawArrow():
         position = turtle.position()
@@ -200,11 +202,20 @@ def drawConnections(row, element, vertexes, direction=True):
         position = el.position
         x = el.pos_x
         y = el.pos_y
-        turtle.setheading(turtle.towards(x, y))
         goto_coord = gotoPoint(position, x, y)
+        turtle.setheading(turtle.towards(goto_coord))
         # drawing simple line if there is no connection
         if row.number not in el.connections:
-            turtle.goto(goto_coord)
+            distance = turtle.distance(goto_coord)
+            if not weight:
+                turtle.forward(distance)
+            else:
+                turtle.forward(distance/2)
+                turtle.color("blue")
+                turtle.write(weight, False, 'center', ('Arial', 20, 'normal'))
+                turtle.color("red")
+                turtle.forward(distance/2)
+
             if direction:
                 drawArrow()
         # drawing broken line if there is a connection
@@ -238,9 +249,18 @@ def drawConnections(row, element, vertexes, direction=True):
 
         # drawing simple line if there is no connection
         if row.number not in el.connections:
-            turtle.forward(distance)
-            if direction:
-                drawArrow()
+            if not weight:
+                turtle.forward(distance)
+                if direction:
+                    drawArrow()
+            else:
+                turtle.forward(distance / 2)
+                turtle.color("blue")
+                turtle.write(weight, False, 'center', ('Arial', 20, 'normal'))
+                turtle.color("red")
+                turtle.forward(distance / 2)
+
+
         # drawing broken line if there is a connection
         elif row.number in el.connections and direction:
             # calculating two parts of a line
@@ -295,6 +315,10 @@ def drawConnections(row, element, vertexes, direction=True):
 
         turtle.down()
         turtle.forward(b)
+        if weight:
+            turtle.color("blue")
+            turtle.write(weight, False, 'center', ('Arial', 20, 'normal'))
+            turtle.color("red")
         turtle.setheading(turtle.towards(el.pos_x, goto_y))
         turtle.goto(el.pos_x, goto_y)
         if direction:
@@ -341,6 +365,10 @@ def drawConnections(row, element, vertexes, direction=True):
 
         turtle.down()
         turtle.forward(b)
+        if weight:
+            turtle.color("blue")
+            turtle.write(weight, False, 'center', ('Arial', 20, 'normal'))
+            turtle.color("red")
         turtle.setheading(turtle.towards(goto_x, el.pos_y))
         turtle.goto(goto_x, el.pos_y)
         if direction:
@@ -421,7 +449,7 @@ def drawSimpleCircle(element):
 
 
 # Creating weighted matrix
-def createMatrixW(matrixA, vertexes):
+def drawWeightedGraph(matrixA, vertexes):
     def elementProduct(matrix1, matrix2, k=1):
         result = []
         for i in range(len(matrix1)):
@@ -489,9 +517,11 @@ def createMatrixW(matrixA, vertexes):
     matrixTr = triangularMatrix(N)
 
     matrixW = createW()
-    print("W matrix:")
+    print("Weighted Matrix:")
     for i in range(N):
-        print(matrixW[i])
+        for j in range(N):
+            print(matrixW[i][j], end='\t')
+        print()
     print()
 
     vertexes_weight = []
@@ -499,6 +529,7 @@ def createMatrixW(matrixA, vertexes):
     mst_groups = [[]]
     weights_sum = 0
 
+    # Creating list of vertexes weight
     for i in range(N):
         for j in range(N):
             el = matrixW[i][j]
@@ -509,6 +540,7 @@ def createMatrixW(matrixA, vertexes):
     vertexes_weight.sort()
     print("Weights of graph:", vertexes_weight)
 
+    # Creating list of edges sorted by weight
     for k in vertexes_weight:
         for i in range(N):
             for j in range(N):
@@ -532,6 +564,7 @@ def createMatrixW(matrixA, vertexes):
         to = sorted_edges[0][0][1]
         draw = []
 
+        # Checking if there is already a group
         if not mst_groups[0]:
             mst_groups[0].append(frm)
             mst_groups[0].append(to)
@@ -567,6 +600,7 @@ def createMatrixW(matrixA, vertexes):
 
             # print("MST list: ", mst_groups)
 
+            # Merging two shared groups together
             if len(shared_groups) == 2:
                 added_group = mst_groups[shared_groups[1]]
                 main_group = mst_groups[shared_groups[0]]
@@ -587,7 +621,8 @@ def createMatrixW(matrixA, vertexes):
             for i in draw:
                 el = vertexes[i]
                 drawSimpleCircle(el)
-            drawConnections(row, element, vertexes, False)
+            drawConnections(row, element, vertexes, False, sorted_edges[0][1])
+
 
         sorted_edges.pop(0)
 
@@ -605,10 +640,12 @@ def main():
 
     print("Undirected Matrix:")
     for i in range(N):
-        print(undirA[i])
+        for j in range(N):
+            print(undirA[i][j], end='\t')
+        print()
     print()
     draw(undirA, N, vertexes, False)
-    createMatrixW(undirA, vertexes)
+    drawWeightedGraph(undirA, vertexes)
 
     turtle.exitonclick()
 
