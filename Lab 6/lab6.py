@@ -632,7 +632,9 @@ def drawWeightedGraph(matrixA, vertexes):
 
             for i in draw:
                 el = vertexes[i]
-                drawSimpleCircle(el)
+                # Drawing this circle red
+                drawSimpleCircle(el)   
+            # Drawing red edge between circles
             drawConnections(row, element, vertexes, False, sorted_edges[0].weight)
 
 
