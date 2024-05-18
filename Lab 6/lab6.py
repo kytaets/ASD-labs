@@ -540,9 +540,10 @@ def drawWeightedGraph(matrixA, vertexes):
     # Creating list of vertexes weight
     for i in range(N):
         for j in range(N):
-            el = matrixW[i][j]
-            if el > 0 and el not in vertexes_weight:
-                vertexes_weight.append(matrixW[i][j])
+            if i != j:
+                el = matrixW[i][j]
+                if el > 0 and el not in vertexes_weight:
+                    vertexes_weight.append(matrixW[i][j])
 
     time.sleep(1)
     vertexes_weight.sort()
