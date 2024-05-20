@@ -1,12 +1,12 @@
 import turtle
 import random
 import math
-import keyboard
+
 
 # Creating a random matrix
-def createMatrix(n3, n4, N):
+def matrix_build(n3, n4, N):
     # Creating a matrix with random float numbers
-    def randMatrix(n):
+    def crate_rand(n):
         random.seed(3219)
         matrix = []
         for i in range(n):
@@ -17,7 +17,7 @@ def createMatrix(n3, n4, N):
         return matrix
 
     # Multiplying matrix by number
-    def multiplyMatrix(matrix, num):
+    def multiply(matrix, num):
         result = []
         for row in matrix:
             updated_row = []
@@ -31,14 +31,14 @@ def createMatrix(n3, n4, N):
             result.append(updated_row)
         return result
 
-    T = randMatrix(N)  # creating matrix
+    T = crate_rand(N)  # creating matrix
     k = 1.0 - n3 * 0.02 - n4 * 0.005 - 0.20
-    A = multiplyMatrix(T, k)  # converting matrix into graph
+    A = multiply(T, k)  # converting matrix into graph
 
     return A
 
 
-def toUndir(dir_matrix):
+def to_undir(dir_matrix):
     n = len(dir_matrix)
 
     undirected_matrix = [[0 for _ in range(n)] for _ in range(n)]
@@ -51,7 +51,7 @@ def toUndir(dir_matrix):
 
 
 # Drawing circles
-def drawVertexes():
+def draw_vertexes():
     vert_coordinates = []
     turtle.up()
     turtle.goto(-300, 200)
@@ -127,7 +127,7 @@ def simple_line(frm_coord, to_coord, direction):
 
 
 # Drawing lines between circles
-def drawLines(from_el, to_el, coords, direction):
+def draw_lines(from_el, to_el, coords, direction):
     frm_coord = coords[from_el]
     to_coord = coords[to_el]
 
@@ -245,7 +245,8 @@ def drawLines(from_el, to_el, coords, direction):
                 arrow()
             turtle.up()
 
-        else:
+        elif abs(frm_coord[0]) == abs(to_coord[0]) and abs(frm_coord[1]) == abs(to_coord[1]):
+            print(frm_coord, to_coord)
             turtle.goto(frm_coord)
             angle = turtle.towards(to_coord)
             turtle.setheading(angle)
@@ -263,22 +264,32 @@ def drawLines(from_el, to_el, coords, direction):
             arrow()
             turtle.up()
 
+        else:
+            turtle.goto(frm_coord)
+            turtle.setheading(turtle.towards(to_coord))
+            turtle.forward(25)
+
+            turtle.down()
+            turtle.forward(turtle.distance(to_coord) - 25)
+            arrow()
+            turtle.up()
+
 
 def draw(matrix, length, direction=True):
     turtle.speed(0)
     turtle.color("black")
-    coords = drawVertexes()
+    coords = draw_vertexes()
     print(coords)
     for i in range(length):
         for j in range(length):
             if matrix[i][j]:
-                drawLines(i, j, coords, direction)
+                draw_lines(i, j, coords, direction)
 
 
 n3 = 1
 n4 = 9
-N = 10 + n3  # N = 11
-matrixA = createMatrix(n3, n4, N)
+N = 10 + n3
+matrixA = matrix_build(n3, n4, N)
 
 print("Dir Matrix:")
 for i in range(N):
@@ -287,14 +298,17 @@ print()
 
 draw(matrixA, N)
 print("Directed graph has built.")
-keyboard.wait("r")
+
+input("Enter to build undirected graph...")
 turtle.clear()
 
-matrix_un = toUndir(matrixA)                    # creating undirected matrix
+matrix_un = to_undir(matrixA)                    # creating undirected matrix
 print("Undirected Matrix:")
 for i in range(N):
     print(matrix_un[i])
 
 draw(matrix_un, N, False)
+print("Undirected graph has built.")
+
 turtle.exitonclick()
 
