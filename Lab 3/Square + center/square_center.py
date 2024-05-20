@@ -23,7 +23,7 @@ def createMatrix(n3, n4, N):
             updated_row = []
             for element in row:
                 element *= num
-                if element >= 0.2:
+                if element >= 1.2:
                     updated = 1
                 else:
                     updated = 0
@@ -148,15 +148,15 @@ def drawLines(from_el, to_el, coords, direction):
             simple_line(frm_coord, to_coord, direction)
 
         # When the line goes from the first to the 10th el
-        if (from_el == len(coords)-1 and to_el == 0) or (to_el == len(coords)-1 and frm_coord == 0):
+        elif (from_el == len(coords)-1 and to_el == 0) or (to_el == len(coords)-1 and frm_coord == 0):
             simple_line(frm_coord, to_coord, direction)
 
         # When the line lies between neighbours
-        if abs(from_el - to_el) == 1:
+        elif abs(from_el - to_el) == 1:
             simple_line(frm_coord, to_coord, direction)
 
         # When the line lies between same y
-        if frm_coord[1] == to_coord[1]:
+        elif frm_coord[1] == to_coord[1]:
             turtle.goto(frm_coord)
             angle = turtle.towards(to_coord)
             distance = turtle.distance(to_coord)
@@ -200,7 +200,7 @@ def drawLines(from_el, to_el, coords, direction):
             turtle.up()
 
         # When the line lies between same x
-        if frm_coord[0] == to_coord[0]:
+        elif frm_coord[0] == to_coord[0]:
             turtle.goto(frm_coord)
             angle = turtle.towards(to_coord)
             distance = turtle.distance(to_coord)
@@ -227,8 +227,6 @@ def drawLines(from_el, to_el, coords, direction):
                 turtle.setheading(360)
                 turtle.forward(25)
 
-                print(frm_coord, to_coord)
-                keyboard.wait("Space")
                 if frm_coord[1] > to_coord[1]:
                     turtle.setheading(angle + 10)
                     turtle.down()
@@ -244,6 +242,24 @@ def drawLines(from_el, to_el, coords, direction):
             turtle.forward(side)
             if direction:
                 arrow()
+            turtle.up()
+
+        else:
+            turtle.goto(frm_coord)
+            angle = turtle.towards(to_coord)
+            turtle.setheading(angle)
+            turtle.forward(25)
+
+            distance = turtle.distance(to_coord) - 25
+            rad = math.radians(10)
+            side = distance / 2 / math.cos(rad)
+
+            turtle.setheading(angle + 10)
+            turtle.down()
+            turtle.forward(side)
+            turtle.setheading(angle - 10)
+            turtle.forward(side)
+            arrow()
             turtle.up()
 
 
