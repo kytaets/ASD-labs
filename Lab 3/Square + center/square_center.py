@@ -23,7 +23,7 @@ def createMatrix(n3, n4, N):
             updated_row = []
             for element in row:
                 element *= num
-                if element >= 1:
+                if element >= 0.2:
                     updated = 1
                 else:
                     updated = 0
@@ -48,7 +48,6 @@ def toUndir(dir_matrix):
             undirected_matrix[i][j] = dir_matrix[i][j] or dir_matrix[j][i]
 
     return undirected_matrix
-
 
 
 # Drawing circles
@@ -162,22 +161,43 @@ def drawLines(from_el, to_el, coords, direction):
             angle = turtle.towards(to_coord)
             distance = turtle.distance(to_coord)
 
-            turtle.setheading(90)
-            turtle.forward(25)
-
             rad = math.radians(20)
             side = distance / 2 / math.cos(rad)
 
-            turtle.setheading(angle-20)
+            if frm_coord[1] >= 0:
+                turtle.setheading(90)
+                turtle.forward(25)
 
-            turtle.down()
-            turtle.forward(side)
-            turtle.setheading(angle + 20)
+                if frm_coord[0] > to_coord[0]:
+                    turtle.setheading(angle - 20)
+                    turtle.down()
+                    turtle.forward(side)
+                    turtle.setheading(angle + 20)
+                else:
+                    turtle.setheading(angle + 20)
+                    turtle.down()
+                    turtle.forward(side)
+                    turtle.setheading(angle - 20)
+
+            else:
+                turtle.setheading(270)
+                turtle.forward(25)
+
+                if frm_coord[0] > to_coord[0]:
+                    turtle.setheading(angle + 20)
+                    turtle.down()
+                    turtle.forward(side)
+                    turtle.setheading(angle - 20)
+                else:
+                    turtle.setheading(angle - 20)
+                    turtle.down()
+                    turtle.forward(side)
+                    turtle.setheading(angle + 20)
+
             turtle.forward(side)
             if direction:
                 arrow()
             turtle.up()
-
 
         # When the line lies between same x
         if frm_coord[0] == to_coord[0]:
@@ -185,17 +205,42 @@ def drawLines(from_el, to_el, coords, direction):
             angle = turtle.towards(to_coord)
             distance = turtle.distance(to_coord)
 
-            turtle.setheading(180)
-            turtle.forward(25)
-
             rad = math.radians(10)
             side = distance / 2 / math.cos(rad)
 
-            turtle.setheading(angle - 10)
+            if frm_coord[0] <= 0:
+                turtle.setheading(180)
+                turtle.forward(25)
 
-            turtle.down()
-            turtle.forward(side)
-            turtle.setheading(angle + 10)
+                if frm_coord[1] > to_coord[1]:
+                    turtle.setheading(angle - 10)
+                    turtle.down()
+                    turtle.forward(side)
+                    turtle.setheading(angle + 10)
+
+                else:
+                    turtle.setheading(angle + 10)
+                    turtle.down()
+                    turtle.forward(side)
+                    turtle.setheading(angle - 10)
+            else:
+                turtle.setheading(360)
+                turtle.forward(25)
+
+                print(frm_coord, to_coord)
+                keyboard.wait("Space")
+                if frm_coord[1] > to_coord[1]:
+                    turtle.setheading(angle + 10)
+                    turtle.down()
+                    turtle.forward(side)
+                    turtle.setheading(angle - 10)
+
+                else:
+                    turtle.setheading(angle - 10)
+                    turtle.down()
+                    turtle.forward(side)
+                    turtle.setheading(angle + 10)
+
             turtle.forward(side)
             if direction:
                 arrow()
@@ -224,6 +269,7 @@ for i in range(N):
 print()
 
 draw(matrixA, N)
+print("Directed graph has built.")
 keyboard.wait("r")
 turtle.clear()
 
