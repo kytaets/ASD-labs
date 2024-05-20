@@ -125,6 +125,7 @@ def simple_line(frm_coord, to_coord, direction):
         arrow()
     turtle.up()
 
+
 # Drawing lines between circles
 def drawLines(from_el, to_el, coords, direction):
     frm_coord = coords[from_el]
