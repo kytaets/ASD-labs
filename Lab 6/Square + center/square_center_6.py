@@ -371,9 +371,9 @@ def prim_tree(matrix, coords):
 
         return result
 
-    length = len(matrixA)
+    length = len(matrix)
     matrixB = matr_random(length)
-    matrixC = elementProduct(matrixA, matrixB, 100)
+    matrixC = elementProduct(matrix, matrixB, 100)
     matrixD = creareD(matrixC)
     matrixH = symmetricMatrix(matrixD)
     matrixTr = triangularMatrix(length)
@@ -396,9 +396,8 @@ def prim_tree(matrix, coords):
         row = vertexes[-1]
         col = 0
         min_weight = 0
-        print("Min weight:", min_weight)
         for j in range(length):
-            if j not in vertexes:
+            if j not in vertexes and matrixW[row][j] != 0:
                 print("To:", j)
                 if min_weight == 0:
                     min_weight = matrixW[row][j]
@@ -407,21 +406,17 @@ def prim_tree(matrix, coords):
                     min_weight = matrixW[row][j]
                     col = j
 
-        vertexes.append(col)
-        print(vertexes)
-        print(row, col)
-        keyboard.wait("Space")
-        drawSimpleCircle(row, coords)
-        keyboard.wait("Space")
-        draw_lines(row, col, coords, False)
-        keyboard.wait("Space")
-        drawSimpleCircle(col, coords)
+        if min_weight != 0:
+            vertexes.append(col)
+            print(vertexes)
+            print(row, col)
 
-
-
-
-
-
+            keyboard.wait("Space")
+            drawSimpleCircle(row, coords)
+            keyboard.wait("Space")
+            draw_lines(row, col, coords, False)
+            keyboard.wait("Space")
+            drawSimpleCircle(col, coords)
 
 
 
