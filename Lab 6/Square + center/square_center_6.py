@@ -1,7 +1,6 @@
 import turtle
 import random
 import math
-import keyboard
 
 # Creating a matrix with random float numbers
 def matr_random(n):
@@ -119,24 +118,29 @@ def arrow():
     turtle.forward(10)
 
 
-def simple_line(frm_coord, to_coord, direction):
+def simple_line(frm_coord, to_coord, direction, weight):
     turtle.goto(frm_coord)
     turtle.setheading(turtle.towards(to_coord))
     turtle.forward(25)
     turtle.down()
-    turtle.forward(turtle.distance(to_coord) - 25)
+    distance = (turtle.distance(to_coord) - 25) / 2
+
+    turtle.forward(distance)
+    if weight:
+        turtle.color("black")
+        turtle.write(f"{weight}", False, 'center', ('Arial', 25, 'normal'))
+        turtle.color("red")
+    turtle.forward(distance)
+
     if direction:
         arrow()
     turtle.up()
 
 
 # Drawing lines between circles
-def draw_lines(from_el, to_el, coords, direction):
+def draw_lines(from_el, to_el, coords, direction, weight=0):
     frm_coord = coords[from_el]
     to_coord = coords[to_el]
-
-    if from_el == 5:
-        print("5:", from_el, to_el)
 
     # When line goes to the element itself
     if from_el == to_el:
@@ -151,20 +155,8 @@ def draw_lines(from_el, to_el, coords, direction):
         turtle.up()
 
     else:
-        # When the line goes from the center
-        if from_el == len(coords):
-            simple_line(frm_coord, to_coord, direction)
-
-        # When the line goes from the first to the 10th el
-        elif (from_el == len(coords)-1 and to_el == 0) or (to_el == len(coords)-1 and frm_coord == 0):
-            simple_line(frm_coord, to_coord, direction)
-
-        # When the line lies between neighbours
-        elif abs(from_el - to_el) == 1:
-            simple_line(frm_coord, to_coord, direction)
-
         # When the line lies between same y
-        elif frm_coord[1] == to_coord[1]:
+        if frm_coord[1] == to_coord[1]:
             turtle.goto(frm_coord)
             angle = turtle.towards(to_coord)
             distance = turtle.distance(to_coord)
@@ -202,6 +194,10 @@ def draw_lines(from_el, to_el, coords, direction):
                     turtle.forward(side)
                     turtle.setheading(angle + 20)
 
+            if weight:
+                turtle.color("black")
+                turtle.write(f"{weight}", False, 'center', ('Arial', 25, 'normal'))
+                turtle.color("red")
             turtle.forward(side)
             if direction:
                 arrow()
@@ -247,6 +243,10 @@ def draw_lines(from_el, to_el, coords, direction):
                     turtle.forward(side)
                     turtle.setheading(angle + 10)
 
+            if weight:
+                turtle.color("black")
+                turtle.write(f"{weight}", False, 'center', ('Arial', 25, 'normal'))
+                turtle.color("red")
             turtle.forward(side)
             if direction:
                 arrow()
@@ -266,21 +266,20 @@ def draw_lines(from_el, to_el, coords, direction):
             turtle.down()
             turtle.forward(side)
             turtle.setheading(angle - 10)
+
+            if weight:
+                turtle.color("black")
+                turtle.write(f"{weight}", False, 'center', ('Arial', 25, 'normal'))
+                turtle.color("red")
+
             turtle.forward(side)
+
             if direction:
                 arrow()
             turtle.up()
 
         else:
-            turtle.goto(frm_coord)
-            turtle.setheading(turtle.towards(to_coord))
-            turtle.forward(25)
-
-            turtle.down()
-            turtle.forward(turtle.distance(to_coord) - 25)
-            if direction:
-                arrow()
-            turtle.up()
+            simple_line(frm_coord, to_coord, direction, weight)
 
 
 def draw(matrix, length, direction=True):
@@ -301,14 +300,6 @@ def drawSimpleCircle(element, coords):
     turtle.down()
     turtle.circle(25)
     turtle.up()
-
-
-# Class for weighted vertexes
-class WeightedVertex:
-    def __init__(self, vertexes, weight):
-        self.vertexes = vertexes
-        self.weight = weight
-        self.next = None
 
 
 def prim_tree(matrix, coords):
@@ -391,6 +382,7 @@ def prim_tree(matrix, coords):
     turtle.speed(3)
 
     vertexes = [0]
+    tree_weight = 0
     back_k = 1
 
     while len(vertexes) != length:
@@ -399,7 +391,6 @@ def prim_tree(matrix, coords):
         min_weight = 0
         for j in range(length):
             if j not in vertexes and matrixW[row][j] != 0:
-                print("To:", j)
                 if min_weight == 0:
                     min_weight = matrixW[row][j]
                     col = j
@@ -409,21 +400,21 @@ def prim_tree(matrix, coords):
 
         if min_weight != 0:
             vertexes.append(col)
-            print(vertexes)
-            print(row, col)
+            weight = matrixW[row][col]
+            tree_weight += weight
 
-            keyboard.wait("Space")
+            input("Press 'Enter' to build the next step...")
             drawSimpleCircle(row, coords)
-            draw_lines(row, col, coords, False)
+            draw_lines(row, col, coords, False, weight)
             drawSimpleCircle(col, coords)
             back_k = 1
-            print("Back k:", back_k)
 
         else:
             back_k += 1
-            print("Back k:", back_k)
 
-    print("Tree was build")
+    print("Tree was build.")
+    print("Weight of the tree: ", tree_weight)
+
 
 n3 = 1
 n4 = 9
@@ -439,7 +430,6 @@ coords = draw(matrix_un, N, False)
 print("Undirected graph has built.")
 
 # input("Press enter to build tree...")
-keyboard.wait("Space")
 prim_tree(matrix_un, coords)
 
 
