@@ -391,9 +391,10 @@ def prim_tree(matrix, coords):
     turtle.speed(3)
 
     vertexes = [0]
+    back_k = 1
 
-    for i in range(length):
-        row = vertexes[-1]
+    while len(vertexes) != length:
+        row = vertexes[-1*back_k]
         col = 0
         min_weight = 0
         for j in range(length):
@@ -413,12 +414,16 @@ def prim_tree(matrix, coords):
 
             keyboard.wait("Space")
             drawSimpleCircle(row, coords)
-            keyboard.wait("Space")
             draw_lines(row, col, coords, False)
-            keyboard.wait("Space")
             drawSimpleCircle(col, coords)
+            back_k = 1
+            print("Back k:", back_k)
 
+        else:
+            back_k += 1
+            print("Back k:", back_k)
 
+    print("Tree was build")
 
 n3 = 1
 n4 = 9
